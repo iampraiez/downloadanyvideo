@@ -1,0 +1,7 @@
+onlyBuiltDependencies:
+  - es5-ext
+  - sharp
+  - snyk
+  - unrs-resolver
+  - youtube-dl
+  - youtube-dl-exec
