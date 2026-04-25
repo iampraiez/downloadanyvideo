@@ -4,16 +4,7 @@
   "installCommand": "pnpm install",
   "outputDirectory": ".next",
   "regions": ["iad1"],
-  "functions": {
-    "app/api/download/route.ts": {
-      "runtime": "nodejs22.x",
-      "maxDuration": 60
-    },
-    "app/api/proxy/route.ts": {
-      "runtime": "nodejs22.x",
-      "maxDuration": 60
-    }
-  },
+
   "headers": [
     {
       "source": "/api/(.*)",

@@ -4,6 +4,8 @@ import { PROVIDERS } from "@/lib/providers";
 import { logRequest, logFailure, logSuccess, progressBar } from "@/lib/logger";
 import { download, type DownloadResult } from "@/lib/downloaders";
 
+export const maxDuration = 60;
+
 interface RequestBody {
   url: string;
   provider: string;
