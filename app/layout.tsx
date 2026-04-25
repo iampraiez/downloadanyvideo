@@ -53,10 +53,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: {
-      url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1.5' y='2' width='21' height='15.5' rx='4.5' fill='%23000000'/%3E%3Cpath d='M10.5 7v5.5l5-2.75z' fill='%23ffffff' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round'/%3E%3Crect x='3.5' y='19.5' width='17' height='2.5' rx='1.25' fill='%23000000'/%3E%3C/svg%3E",
-      type: "image/svg+xml",
-    },
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
   },
 };
 

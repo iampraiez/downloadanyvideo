@@ -13,7 +13,7 @@ importers:
         version: 4.16.12
       '@faouzkk/tiktok-dl':
         specifier: ^1.0.1
-        version: 1.0.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)
+        version: 1.0.1(@types/node@22.13.10)(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.1)(postcss@8.5.10)
       '@radix-ui/react-switch':
         specifier: 1.1.3
         version: 1.1.3(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -27,8 +27,8 @@ importers:
         specifier: 3.0.1
         version: 3.0.1
       next:
-        specifier: 15.2.5
-        version: 15.2.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: 15.2.8
+        version: 15.2.8(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       pinterest-dl:
         specifier: 1.0.1
         version: 1.0.1
@@ -674,8 +674,8 @@ packages:
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
 
-  '@next/env@15.2.5':
-    resolution: {integrity: sha512-uWkCf9C8wKTyQjqrNk+BA7eL3LOQdhL+xlmJUf2O85RM4lbzwBwot3Sqv2QGe/RGnc3zysIf1oJdtq9S00pkmQ==}
+  '@next/env@15.2.8':
+    resolution: {integrity: sha512-TaEsAki14R7BlgywA05t2PFYfwZiNlGUHyIQHVyloXX3y+Dm0HUITe5YwTkjtuOQuDhuuLotNEad4VtnmE11Uw==}
 
   '@next/eslint-plugin-next@15.2.4':
     resolution: {integrity: sha512-O8ScvKtnxkp8kL9TpJTTKnMqlkZnS+QxwoQnJwPGBxjBbzd6OVVPEJ5/pMNrktSyXQD/chEfzfFzYLM6JANOOQ==}
@@ -3410,10 +3410,9 @@ packages:
   next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
 
-  next@15.2.5:
-    resolution: {integrity: sha512-LlqS8ljc7RWR3riUwxB5+14v7ULAa5EuLUyarD/sFgXPd6Hmmscg8DXcu9hDdh5atybrIDVBrFhjDpRIQo/4pQ==}
+  next@15.2.8:
+    resolution: {integrity: sha512-pe2trLKZTdaCuvNER0S9Wp+SP2APf7SfFmyUP9/w1SFA2UqmW0u+IsxCKkiky3n6um7mryaQIlgiDnKrf1ZwIw==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
-    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/CVE-2025-66478 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -4869,22 +4868,30 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@faouzkk/tiktok-dl@1.0.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)':
+  '@faouzkk/tiktok-dl@1.0.1(@types/node@22.13.10)(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.1)(postcss@8.5.10)':
     dependencies:
-      '@faouzkk/tiktok-dl': downloadanyvideo-next@file:(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)
+      '@faouzkk/tiktok-dl': downloadanyvideo-next@file:(@types/node@22.13.10)(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.1)(postcss@8.5.10)
       axios: 1.15.2
       cheerio: 1.2.0
     transitivePeerDependencies:
       - '@babel/core'
+      - '@microsoft/api-extractor'
       - '@opentelemetry/api'
       - '@playwright/test'
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
       - '@types/react'
       - '@types/react-dom'
       - babel-plugin-macros
       - babel-plugin-react-compiler
       - debug
+      - jiti
+      - postcss
       - sass
       - supports-color
+      - tsx
+      - yaml
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -5040,7 +5047,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@next/env@15.2.5': {}
+  '@next/env@15.2.8': {}
 
   '@next/eslint-plugin-next@15.2.4':
     dependencies:
@@ -6317,14 +6324,15 @@ snapshots:
       mkdirp: 0.5.6
       pify: 2.3.0
 
-  downloadanyvideo-next@file:(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10):
+  downloadanyvideo-next@file:(@types/node@22.13.10)(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.1)(postcss@8.5.10):
     dependencies:
       '@distube/ytdl-core': 4.16.12
-      '@faouzkk/tiktok-dl': 1.0.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)
+      '@faouzkk/tiktok-dl': 1.0.1(@types/node@22.13.10)(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(jiti@2.6.1)(postcss@8.5.10)
       '@radix-ui/react-switch': 1.1.3(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@totallynotdavid/downloader': 1.0.2
+      btch-downloader: 6.0.27(@types/node@22.13.10)(jiti@2.6.1)(postcss@8.5.10)
       fb-downloader-scrapper: 3.0.1
-      next: 15.2.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      next: 15.2.8(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       pinterest-dl: 1.0.1
       primesave-dl: 1.0.2
       react: 19.1.0
@@ -6338,15 +6346,23 @@ snapshots:
       youtubei.js: 17.0.1
     transitivePeerDependencies:
       - '@babel/core'
+      - '@microsoft/api-extractor'
       - '@opentelemetry/api'
       - '@playwright/test'
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
       - '@types/react'
       - '@types/react-dom'
       - babel-plugin-macros
       - babel-plugin-react-compiler
       - debug
+      - jiti
+      - postcss
       - sass
       - supports-color
+      - tsx
+      - yaml
 
   dreamopt@0.6.0:
     dependencies:
@@ -8006,9 +8022,9 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@15.2.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next@15.2.8(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
-      '@next/env': 15.2.5
+      '@next/env': 15.2.8
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0

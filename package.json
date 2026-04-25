@@ -1,5 +1,5 @@
 {
-  "name": "downloadanyvideo-next",
+  "name": "downloadanyvideo",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "@totallynotdavid/downloader": "^1.0.2",
     "btch-downloader": "^6.0.27",
     "fb-downloader-scrapper": "3.0.1",
-    "next": "15.2.5",
+    "next": "15.2.8",
     "pinterest-dl": "1.0.1",
     "primesave-dl": "^1.0.2",
     "react": "19.1.0",

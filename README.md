@@ -1,129 +1,34 @@
-# Download Any Video
+<div align="center">
+  <img src="public/icon.svg" alt="DownloadAnyVideo Icon" width="100" height="100" />
+  <h1>DownloadAnyVideo</h1>
+</div>
 
-<p align="center">
-  <img src="icon.svg" alt="downloadAnyVideo Icon" width="80" height="80" />
-</p>
-
-> A production‑ready Next.js 15 video downloader supporting **20+ providers** — YouTube, TikTok, Instagram, Reddit, Vimeo, Twitch, Dailymotion, LinkedIn, Pinterest, Snapchat, Telegram, Bilibili, VK, Flickr, Patreon, Rumble, Odysee, Likee, Facebook, and X / Twitter.
-
----
-
-## Features
-
-- 🎯 **Auto-provider detection** — paste any URL and the app identifies the platform in real time
-- 🔇 **Watermark removal** — toggle available for TikTok, Instagram, Snapchat, and Likee
-- 📜 **Infinite scrolling marquee** — all providers scroll continuously, pauses on hover
-- 🔒 **URL sanitization** — blocks malicious schemes (`javascript:`, `data:`, `blob:`) before any processing
-- 🌐 **Server-side API routes** — download logic runs on the server, never in the browser
-- 🏗️ **TypeScript everywhere** — no `any` types, strict mode enabled
+> A fast, free, and robust video downloader supporting **20+ providers** including YouTube, TikTok, Instagram, X (Twitter), Facebook, Reddit, and Vimeo.
 
 ---
 
-## Supported Providers
+## 🎯 What it does
 
-| Provider    | Watermark Removal |
-| ----------- | ----------------- |
-| YouTube     | —                 |
-| TikTok      | ✅                |
-| Instagram   | ✅                |
-| Facebook    | —                 |
-| X / Twitter | —                 |
-| Reddit      | —                 |
-| Vimeo       | —                 |
-| Twitch      | —                 |
-| Dailymotion | —                 |
-| LinkedIn    | —                 |
-| Pinterest   | —                 |
-| Snapchat    | ✅                |
-| Telegram    | —                 |
-| Bilibili    | —                 |
-| VK          | —                 |
-| Flickr      | —                 |
-| Patreon     | —                 |
-| Rumble      | —                 |
-| Odysee      | —                 |
-| Likee       | ✅                |
+DownloadAnyVideo allows you to easily extract and download videos from your favorite social media and video hosting platforms. 
+
+- **Auto-detection**: Paste any valid video link and the app instantly identifies the platform.
+- **No Watermarks**: Automatically removes watermarks where supported (e.g., TikTok, Instagram, Snapchat, Likee).
+- **No Sign-ups**: Completely free to use with no login required.
+- **High Quality**: Always extracts the highest available bitrate and format natively.
+
+## 🚀 How to use
+
+1. Go to your desired video on any supported platform (YouTube, Twitter/X, Instagram, etc.).
+2. Copy the video link (URL).
+3. Open **DownloadAnyVideo** and paste the link into the main input field.
+4. If available, toggle the "No watermark" switch.
+5. Click **Download**. Your video will be processed and the download will begin automatically.
 
 ---
 
-## Setup
+## 🌐 Supported Providers
 
-### Prerequisites
-
-- **Node.js** 20+
-- **pnpm** 9+ (`npm i -g pnpm`)
-
-### Install & Run
-
-```bash
-# 1. Install dependencies
-pnpm install
-
-# 2. Start dev server
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Build for Production
-
-```bash
-pnpm build
-pnpm start
-```
+YouTube, Instagram, Facebook, TikTok, X / Twitter, Reddit, Vimeo, Twitch, Dailymotion, Pinterest, Bilibili, VK, Flickr, Rumble, Odysee, Likee, Pornhub, XVideos, Streamable, Imgur, and Giphy.
 
 ---
-
-## Project Structure
-
-```
-downloadanyvideo/
-├── app/
-│   ├── api/
-│   │   └── download/
-│   │       └── route.ts          # POST /api/download
-│   ├── globals.css               # Tailwind v4 + marquee CSS
-│   ├── layout.tsx                # Root layout with metadata
-│   └── page.tsx                  # Main UI (client component)
-├── components/
-│   ├── Marquee.tsx               # Infinite scrolling provider marquee
-│   └── WatermarkSwitch.tsx       # Radix UI accessible toggle
-├── lib/
-│   ├── downloaders.ts            # Server-side fetch strategies per provider
-│   ├── providers.ts              # All 20 providers: id, name, icon, regex
-│   └── sanitize.ts               # URL sanitization & multi-link detection
-├── tailwind.config.ts            # Marquee keyframe + Tailwind theme
-├── postcss.config.mjs            # @tailwindcss/postcss (v4)
-└── _legacy/                      # Original index.html + download.js (archived)
-```
-
----
-
-## Download Strategy
-
-Each provider uses the best available server-side approach:
-
-| Provider        | Strategy                                                          |
-| --------------- | ----------------------------------------------------------------- |
-| **YouTube**     | `@distube/ytdl-core` → best video+audio format                    |
-| **TikTok**      | tikwm.com public API (`wmplay` for no-watermark)                  |
-| **Reddit**      | Public `.json` API → `secure_media.reddit_video`                  |
-| **Vimeo**       | Player config endpoint → progressive streams                      |
-| **Dailymotion** | Public fields API → `stream_h264_hd_url`                          |
-| **Bilibili**    | Public `playurl` API → DASH stream                                |
-| **Odysee**      | LBRY backend `resolve` API → `streaming_url`                      |
-| **Rumble**      | Page scraping → embedded MP4 URL                                  |
-| **Others**      | [Cobalt API](https://cobalt.tools) fallback → friendly auth error |
-
----
-
-## Notes
-
-- Providers requiring authentication (Facebook, Twitter/X, LinkedIn, etc.) first attempt the [Cobalt API](https://cobalt.tools) and fall back to a clear user-facing error message.
-- **YouTube throttling:** YouTube aggressively rate-limits automated requests. If downloads fail, this is expected behaviour — no client keys are bundled.
-
----
-
-## License
-
-MIT
+*No installation or setup required. Works via server-side processing.*
