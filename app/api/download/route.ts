@@ -12,7 +12,7 @@ interface RequestBody {
   noWatermark: boolean;
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest) {
   let body: RequestBody;
 
   try {
@@ -70,14 +70,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     progressBar(knownProvider.name, 3, 3);
-    logSuccess(knownProvider.name, result.downloadUrl, durationMs);
+    
+    if (result.downloadUrl) {
+      logSuccess(knownProvider.name, result.downloadUrl, durationMs);
+      return NextResponse.json({
+        downloadUrl: result.downloadUrl,
+        title: result.title,
+        thumbnail: result.thumbnail,
+        format: result.format,
+      });
+    }
 
-    return NextResponse.json({
-      downloadUrl: result.downloadUrl,
-      title: result.title,
-      thumbnail: result.thumbnail,
-      format: result.format,
-    });
+    if (result.downloadId) {
+      console.log("Saved file:", `/tmp/${result.downloadId}.mp4`);
+      logSuccess(knownProvider.name, result.downloadId, durationMs);
+      return NextResponse.json({
+        downloadId: result.downloadId,
+      });
+    }
+
+    return NextResponse.json({ error: "No download location retrieved" }, { status: 422 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     const durationMs = Date.now() - startMs;

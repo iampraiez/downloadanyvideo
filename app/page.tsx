@@ -8,6 +8,7 @@ import {
   type Provider,
 } from "@/lib/providers";
 import { sanitizeUrl, extractUrls } from "@/lib/sanitize";
+import Image from "next/image";
 import WatermarkSwitch from "@/components/WatermarkSwitch";
 import Marquee from "@/components/Marquee";
 
@@ -138,7 +139,7 @@ export default function HomePage(): React.ReactElement {
     if (!sanitized) {
       setStatusMessage({
         type: "error",
-        text: "Invalid URL – please paste a valid video link.",
+        text: "Invalid URL.",
       });
       return;
     }
@@ -159,6 +160,7 @@ export default function HomePage(): React.ReactElement {
       });
 
       const data = (await res.json()) as {
+        downloadId?: string;
         downloadUrl?: string;
         error?: string;
         title?: string;
@@ -189,19 +191,30 @@ export default function HomePage(): React.ReactElement {
           : (data.downloadUrl.split("?")[0].split(".").pop() ?? "mp4");
         filename = `${filename}.${ext}`;
 
-        const proxyUrl = `/api/proxy?url=${encodeURIComponent(data.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
-
-        triggerDownloadLink(proxyUrl, filename);
+        triggerDownloadLink(data.downloadUrl, filename);
         setStatusMessage({
           type: "success",
-          text: "Download started! Save the file when your browser prompts you.",
+          text: "Download started!",
         });
+        setUrl("");
+        setCurrentProvider(null);
+      } else if (data.downloadId) {
+        const finalFilename = `${data.downloadId}.mp4`;
+        const fileUrl = `/api/file/${data.downloadId}`;
+
+        triggerDownloadLink(fileUrl, finalFilename);
+        setStatusMessage({
+          type: "success",
+          text: "Download started!",
+        });
+        setUrl("");
+        setCurrentProvider(null);
       }
     } catch (err: unknown) {
       console.error("Download failed:", err);
       setStatusMessage({
         type: "error",
-        text: "A network connection error occurred while trying to process the request.",
+        text: "Network error.",
       });
     } finally {
       setIsLoading(false);
@@ -249,28 +262,74 @@ export default function HomePage(): React.ReactElement {
   }
 
   return (
-    <main className="w-full max-w-4xl mx-auto px-4 md:px-8 flex flex-col gap-10">
-      <header className="text-center space-y-3">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-2">
-          Download Any Video
-        </h1>
-        <p className="text-gray-400 text-sm md:text-base">
+    <main className="w-full max-w-4xl mx-auto px-4 md:px-8 flex flex-col gap-8 md:gap-10 pb-10">
+      <header className="text-center space-y-4 pt-8 md:pt-12">
+        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
+          <div className="bg-white/5 p-2 rounded-2xl border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+            <Image
+              src="/icon.svg"
+              alt="DownloadAnyVideo Logo"
+              width={40}
+              height={40}
+              className="w-8 h-8 md:w-10 md:h-10 drop-shadow-md brightness-110"
+              priority
+            />
+          </div>
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white line-clamp-1">
+            DownloadAnyVideo
+          </h1>
+        </div>
+        <p className="text-gray-400 text-xs md:text-base max-w-lg mx-auto">
           Paste a link below from any of the 20+ supported providers.
         </p>
       </header>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col gap-6">
         <div className="w-full relative">
-          <input
-            type="url"
-            id="url-input"
-            value={url}
-            onChange={handleInput}
-            placeholder="Paste a video URL here…"
-            autoComplete="off"
-            spellCheck={false}
-            className="w-full bg-transparent text-white placeholder-gray-600 border-b border-[#333] focus:border-white pb-4 pt-2 focus:outline-none text-lg md:text-xl tracking-wide transition-colors duration-300"
-          />
+          <div className="relative flex items-center">
+            <input
+              type="url"
+              id="url-input"
+              value={url}
+              onChange={handleInput}
+              placeholder="Paste a video URL here…"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full bg-transparent text-white placeholder-gray-600 border-b border-[#333] focus:border-white pb-3 pt-2 pr-20 focus:outline-none text-base md:text-xl tracking-wide transition-colors duration-300"
+            />
+            {!url && (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                      setUrl(text);
+                      // Trigger synthetic event to run validation
+                      handleInput({ target: { value: text } } as React.ChangeEvent<HTMLInputElement>);
+                    }
+                  } catch (err) {
+                    console.error("Failed to read clipboard:", err);
+                  }
+                }}
+                className="absolute right-0 bottom-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 hover:text-white transition-colors px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md cursor-pointer group"
+              >
+                <svg
+                  className="w-3.5 h-3.5 transition-transform group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                </svg>
+                Paste
+              </button>
+            )}
+          </div>
           <div
             className="absolute bottom-0 left-0 h-[2px] bg-emerald-400 transition-all ease-out"
             style={{

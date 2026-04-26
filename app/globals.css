@@ -62,9 +62,7 @@ body {
   animation: marquee 35s linear infinite;
 }
 
-.marquee-container:hover .marquee-content {
-  animation-play-state: paused;
-}
+
 
 input[type="url"]::-webkit-search-decoration,
 input[type="url"]::-webkit-search-cancel-button {
