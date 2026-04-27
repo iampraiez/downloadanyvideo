@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     headers.delete("content-encoding"); 
     
     return new NextResponse(response.body, { headers });
-  } catch (err) {
+  } catch (_err) {
     // If the proxy fails for any reason, redirect gracefully to the native url
     return NextResponse.redirect(url); 
   }

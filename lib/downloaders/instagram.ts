@@ -1,4 +1,5 @@
 import { DownloadResult } from "../downloaders";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const igUrlDirect = require("instagram-url-direct");
 
 export async function downloadInstagram(

@@ -28,11 +28,11 @@ export async function GET(req: NextRequest) {
 
     const webStream = new ReadableStream({
       start(controller) {
-        nodeStream.on("data", (chunk: any) =>
+        nodeStream.on("data", (chunk: Uint8Array) =>
           controller.enqueue(new Uint8Array(chunk)),
         );
         nodeStream.on("end", () => controller.close());
-        nodeStream.on("error", (err: any) => controller.error(err));
+        nodeStream.on("error", (err: unknown) => controller.error(err));
       },
       cancel() {
         nodeStream.destroy();

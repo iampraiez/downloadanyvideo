@@ -138,7 +138,7 @@ export default function HomePage(): React.ReactElement {
           // Manually trigger the validation chain
           handleInput({ target: { value: text } } as unknown as React.ChangeEvent<HTMLInputElement>);
         }
-      } catch (err) {
+      } catch (_err) {
         // Silently ignore if permissions are denied or browser restricts event-less clipboard reads
       }
     };
