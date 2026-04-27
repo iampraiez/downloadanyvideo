@@ -1,22 +1,28 @@
 import { DownloadResult } from "../downloaders";
-import ytdl from "@distube/ytdl-core";
+import { Innertube, UniversalCache } from "youtubei.js";
 
 export async function downloadYouTube(
   url: string,
   _noWatermark: boolean = false,
 ): Promise<DownloadResult> {
   try {
-    if (!ytdl.validateURL(url)) {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/|.*shorts\/|.*vi?\/))([^"&?\s]{11})/);
+    const videoId = match ? match[1] : null;
+
+    if (!videoId) {
       return { error: "Invalid YouTube URL." };
     }
     
-    const info = await ytdl.getInfo(url);
+    const yt = await Innertube.create({ cache: new UniversalCache(false) });
+    const info = await yt.getBasicInfo(videoId, { client: "ANDROID" });
     
+    const format = info.chooseFormat({ type: "video+audio", quality: "best" });
+    if (!format || !format.url) throw new Error("Format unavailable");
+
     return {
-      // By returning an internal route, the frontend bypasses standard proxy and CDN failures
-      downloadUrl: `/api/yt?url=${encodeURIComponent(url)}`,
-      title: info.videoDetails.title || "YouTube Video",
-      thumbnail: info.videoDetails.thumbnails?.[0]?.url || null,
+      downloadUrl: format.url,
+      title: info.basic_info.title || "YouTube Video",
+      thumbnail: info.basic_info.thumbnail?.[0]?.url || null,
       format: "mp4",
     };
   } catch (err) {

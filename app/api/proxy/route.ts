@@ -28,13 +28,11 @@ export async function GET(req: NextRequest) {
     }
 
     const headers = new Headers(response.headers);
-    // Explicitly force download instead of inline view
     headers.set("Content-Disposition", `attachment; filename="${encodeURIComponent(filename)}"`);
     headers.delete("content-encoding"); 
     
     return new NextResponse(response.body, { headers });
   } catch (_err) {
-    // If the proxy fails for any reason, redirect gracefully to the native url
     return NextResponse.redirect(url); 
   }
 }

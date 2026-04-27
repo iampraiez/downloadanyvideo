@@ -129,24 +129,7 @@ export default function HomePage(): React.ReactElement {
     [],
   );
 
-  useEffect(() => {
-    const autoPaste = async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text && text !== url && PROVIDERS.some(p => p.regex.test(text))) {
-          setUrl(text);
-          // Manually trigger the validation chain
-          handleInput({ target: { value: text } } as unknown as React.ChangeEvent<HTMLInputElement>);
-        }
-      } catch (_err) {
-        // Silently ignore if permissions are denied or browser restricts event-less clipboard reads
-      }
-    };
-    
-    window.addEventListener("focus", autoPaste);
-    autoPaste(); // Fire initially
-    return () => window.removeEventListener("focus", autoPaste);
-  }, [url, handleInput]);
+
 
   const handleDownload = useCallback(async (): Promise<void> => {
     if (!currentProvider || currentProvider.unknown) {
@@ -205,7 +188,8 @@ export default function HomePage(): React.ReactElement {
             .replace(/\s+/g, " ")
             .trim()
             .slice(0, 80);
-          filename = `[${currentProvider.name}] ${safeTitle}`.trim();
+          const suffix = (noWatermark && currentProvider.hasWatermark) ? " (No Watermark)" : "";
+          filename = `[${currentProvider.name}] ${safeTitle}${suffix}`.trim();
         }
 
         const ext = data.format?.includes("mp4")

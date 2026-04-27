@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
   try {
     progressBar(knownProvider.name, 2, 3);
-    const result: DownloadResult = await download(sanitized, providerId);
+    const result: DownloadResult = await download(sanitized, providerId, knownProvider.hasWatermark && _noWatermark);
     const durationMs = Date.now() - startMs;
 
     if ("error" in result) {
