@@ -1,51 +1,26 @@
-import { create } from "youtube-dl-exec";
-import crypto from "crypto";
-import fs from "fs";
 import { DownloadResult } from "../downloaders";
-
-function getYtDlp() {
-  const binaryPath = process.env.YT_DLP_PATH ?? "yt-dlp";
-  return create(binaryPath);
-}
+import ytdl from "@distube/ytdl-core";
 
 export async function downloadYouTube(
   url: string,
   _noWatermark: boolean = false,
 ): Promise<DownloadResult> {
-  const downloadId = crypto.randomUUID();
-  const tempPath = `/tmp/${downloadId}.mp4`;
-
-  const options: Record<string, unknown> = {
-    noCheckCertificates: true,
-    preferFreeFormats: true,
-    format: "bestvideo+bestaudio/best",
-    mergeOutputFormat: "mp4",
-    output: tempPath,
-    noWarnings: true,
-    playlistItems: "1",
-    noPlaylist: true,
-  };
-
-  if (process.env.YT_DLP_USE_BROWSER_COOKIES === "true") {
-    options.cookiesFromBrowser = "chrome";
-  }
-
   try {
-    const youtubeDlExec = getYtDlp();
-    await youtubeDlExec(url, options);
-
-    if (!fs.existsSync(tempPath)) {
-      return { error: "Download failed: yt-dlp did not produce a file. FFmpeg may be required." };
+    if (!ytdl.validateURL(url)) {
+      return { error: "Invalid YouTube URL." };
     }
-
-    console.log("Saved file:", tempPath);
-
-    setTimeout(() => {
-      fs.unlink(tempPath, () => {});
-    }, 10 * 60 * 1000);
-
-    return { downloadId };
-  } catch (_err: unknown) {
-    return { error: "YouTube video could not be downloaded." };
+    
+    const info = await ytdl.getInfo(url);
+    
+    return {
+      // By returning an internal route, the frontend bypasses standard proxy and CDN failures
+      downloadUrl: `/api/yt?url=${encodeURIComponent(url)}`,
+      title: info.videoDetails.title || "YouTube Video",
+      thumbnail: info.videoDetails.thumbnails?.[0]?.url || null,
+      format: "mp4",
+    };
+  } catch (err) {
+    console.error("[YouTube Downloader] Error:", err);
+    return { error: "Failed to process YouTube execution. Format blocked or Vercel IP rate-limited." };
   }
 }

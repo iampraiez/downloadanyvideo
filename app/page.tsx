@@ -35,8 +35,11 @@ function isPlaylist(url: string, providerId: string): boolean {
 }
 
 function triggerDownloadLink(downloadUrl: string, filename: string): void {
+  // Use server proxy to inject Content-Disposition headers and bypass CORS redirect UX
+  const proxyUrl = `/api/proxy?url=${encodeURIComponent(downloadUrl)}&filename=${encodeURIComponent(filename)}`;
+  
   const anchor = document.createElement("a");
-  anchor.href = downloadUrl;
+  anchor.href = proxyUrl;
   anchor.download = filename;
   anchor.target = "_top";
   document.body.appendChild(anchor);
@@ -125,6 +128,25 @@ export default function HomePage(): React.ReactElement {
     },
     [],
   );
+
+  useEffect(() => {
+    const autoPaste = async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text && text !== url && PROVIDERS.some(p => p.regex.test(text))) {
+          setUrl(text);
+          // Manually trigger the validation chain
+          handleInput({ target: { value: text } } as unknown as React.ChangeEvent<HTMLInputElement>);
+        }
+      } catch (err) {
+        // Silently ignore if permissions are denied or browser restricts event-less clipboard reads
+      }
+    };
+    
+    window.addEventListener("focus", autoPaste);
+    autoPaste(); // Fire initially
+    return () => window.removeEventListener("focus", autoPaste);
+  }, [url, handleInput]);
 
   const handleDownload = useCallback(async (): Promise<void> => {
     if (!currentProvider || currentProvider.unknown) {

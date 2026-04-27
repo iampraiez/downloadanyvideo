@@ -1,6 +1,7 @@
 import { downloadYouTube } from "./downloaders/youtube";
 import { downloadTwitter } from "./downloaders/twitter";
 import { downloadTikTok } from "./downloaders/tiktok";
+import { downloadInstagram } from "./downloaders/instagram";
 
 export interface DownloadSuccess {
   downloadId?: string;
@@ -46,6 +47,10 @@ export async function download(
 
     if (provider === "tiktok") {
       return await downloadTikTok(url, provider, _noWatermark);
+    }
+
+    if (provider === "instagram") {
+      return await downloadInstagram(url, _noWatermark);
     }
 
     return { error: "Video is private or unavailable." };
