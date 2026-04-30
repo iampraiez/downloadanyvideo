@@ -1,102 +1,52 @@
-import { NextRequest, NextResponse } from "next/server";
-import { sanitizeUrl } from "@/lib/sanitize";
-import { PROVIDERS } from "@/lib/providers";
-import { logRequest, logFailure, logSuccess, progressBar } from "@/lib/logger";
-import { download, type DownloadResult } from "@/lib/downloaders";
+import { NextResponse } from "next/server";
+import { getDownloadUrl } from "@/lib/core/resolver";
 
-export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
-interface RequestBody {
-  url: string;
-  provider: string;
-  noWatermark: boolean;
-}
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const url = searchParams.get("url");
+  const formatId = searchParams.get("formatId");
+  
+  const rawTitle = searchParams.get("title") || "video";
+  const ext = searchParams.get("ext") || "mp4";
 
-export async function POST(request: NextRequest) {
-  let body: RequestBody;
+  if (!url) {
+    return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });
+  }
 
   try {
-    body = (await request.json()) as RequestBody;
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request body – expected JSON." },
-      { status: 400 }
-    );
-  }
-
-  const { url, provider, noWatermark: _noWatermark } = body;
-
-  if (!url || typeof url !== "string") {
-    return NextResponse.json({ error: "Missing or invalid `url`." }, { status: 400 });
-  }
-
-  const sanitized = sanitizeUrl(url);
-  if (!sanitized) {
-    return NextResponse.json(
-      { error: "The provided URL is invalid or potentially unsafe." },
-      { status: 400 }
-    );
-  }
-
-  if (!provider || typeof provider !== "string") {
-    return NextResponse.json({ error: "Missing `provider`." }, { status: 400 });
-  }
-
-  const providerId = provider.toLowerCase();
-
-  const knownProvider = PROVIDERS.find((p) => p.id === providerId);
-  if (!knownProvider) {
-    return NextResponse.json(
-      {
-        error: `Unknown provider: "${provider}". Supported providers are: ${PROVIDERS.map((p) => p.id).join(", ")}.`,
-      },
-      { status: 400 }
-    );
-  }
-
-  logRequest(knownProvider.name, sanitized, false);
-  progressBar(knownProvider.name, 1, 3);
-
-  const startMs = Date.now();
-
-  try {
-    progressBar(knownProvider.name, 2, 3);
-    const result: DownloadResult = await download(sanitized, providerId, knownProvider.hasWatermark && _noWatermark);
-    const durationMs = Date.now() - startMs;
-
-    if ("error" in result) {
-      logFailure(knownProvider.name, result.error, durationMs);
-      return NextResponse.json({ error: result.error }, { status: 422 });
-    }
-
-    progressBar(knownProvider.name, 3, 3);
+    const directUrl = await getDownloadUrl(url, formatId || undefined);
     
-    if (result.downloadUrl) {
-      logSuccess(knownProvider.name, result.downloadUrl, durationMs);
-      return NextResponse.json({
-        downloadUrl: result.downloadUrl,
-        title: result.title,
-        thumbnail: result.thumbnail,
-        format: result.format,
-      });
+    const safeTitle = rawTitle.replace(/[^\w\s-]/g, "").slice(0, 80);
+    const filename = `${safeTitle || "video"}.${ext}`;
+
+    const upstream = await fetch(directUrl, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0",
+        "Referer": "https://x.com/"
+      },
+    });
+
+    if (!upstream.ok) {
+      throw new Error(`Upstream returned ${upstream.status}`);
     }
 
-    if (result.downloadId) {
-      console.log("Saved file:", `/tmp/${result.downloadId}.mp4`);
-      logSuccess(knownProvider.name, result.downloadId, durationMs);
-      return NextResponse.json({
-        downloadId: result.downloadId,
-      });
-    }
+    const headers = new Headers();
+    const contentType = upstream.headers.get("content-type");
+    if (contentType) headers.set("Content-Type", contentType);
+    
+    const contentLength = upstream.headers.get("content-length");
+    if (contentLength) headers.set("Content-Length", contentLength);
 
-    return NextResponse.json({ error: "No download location retrieved" }, { status: 422 });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    const durationMs = Date.now() - startMs;
-    logFailure(knownProvider.name, message, durationMs);
-    return NextResponse.json(
-      { error: `An unexpected server error occurred: ${message}` },
-      { status: 500 }
-    );
+    headers.set("Content-Disposition", `attachment; filename="${filename}"`);
+
+    return new Response(upstream.body, { 
+      status: 200,
+      headers 
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to process download stream";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
